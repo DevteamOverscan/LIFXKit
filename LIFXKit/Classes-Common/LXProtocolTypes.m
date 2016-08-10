@@ -1610,6 +1610,87 @@ typedef struct LXProtocolDeviceStateFactoryTestMode_t {
 //===========================================================================
 
 
+@implementation LXProtocolDeviceGetGroup
+
+- (NSData *)dataValue
+{
+    return nil;
+}
+
+@end
+
+
+//===========================================================================
+
+#pragma pack(push, 1)
+typedef struct LXProtocolDeviceStateGroup_t {
+    uint8_t group[16];
+    uint8_t label[32];
+    uint64_t updated_at;
+} LXProtocolDeviceStateGroup_t;
+#pragma pack(pop)
+
+@implementation LXProtocolDeviceStateGroup
+
++ (instancetype)objectWithData:(NSData *)data
+{
+    LXProtocolDeviceStateGroup *newObject = [LXProtocolDeviceStateGroup new];
+    LXProtocolDeviceStateGroup_t structValue;
+    if (data.length != sizeof(structValue)) {
+        LFXLogWarn(@"Warning: data size (%tu) isn't equal to struct size (%tu) for %@", data.length, sizeof(structValue), NSStringFromClass(self.class));
+    }
+    memset(&structValue, 0, sizeof(structValue));
+    [data getBytes:&structValue length:sizeof(structValue)];
+    
+    
+    // Temporary hack to handle non-null-terminated string buffers. -[NSString -initWithBytes:length:encoding:] seems to have some sort of nasty bug, I suspect that it isn't copying the byte buffer properly
+    uint8_t groupTempBuffer[200];
+    memset(groupTempBuffer, 0, sizeof(groupTempBuffer));
+    memcpy(groupTempBuffer, structValue.group, sizeof(structValue.group));
+    newObject.group = @((char *)groupTempBuffer);
+    
+    // Temporary hack to handle non-null-terminated string buffers. -[NSString -initWithBytes:length:encoding:] seems to have some sort of nasty bug, I suspect that it isn't copying the byte buffer properly
+    uint8_t labelTempBuffer[200];
+    memset(labelTempBuffer, 0, sizeof(labelTempBuffer));
+    memcpy(labelTempBuffer, structValue.label, sizeof(structValue.label));
+    newObject.label = @((char *)labelTempBuffer);
+    
+    newObject.updated_at = structValue.updated_at;
+    
+    return newObject;
+}
+
++ (NSUInteger)dataSize
+{
+    return sizeof(LXProtocolDeviceStateGroup_t);
+}
+
+- (NSData *)dataValue
+{
+    LXProtocolDeviceStateGroup_t structValue;
+    memset(&structValue, 0, sizeof(structValue));
+    
+    if (self.group.length >= sizeof(structValue.group)) LFXLogWarn(@"Warning: %@.group (%@) is longer than the maximum length (%tu)", NSStringFromClass(self.class), self.group, sizeof(structValue.group));
+    [self.group getBytes:structValue.group maxLength:sizeof(structValue.group) usedLength:NULL encoding:NSUTF8StringEncoding options:0 range:NSMakeRange(0, self.group.length) remainingRange:NULL];
+    if (self.label.length >= sizeof(structValue.label)) LFXLogWarn(@"Warning: %@.label (%@) is longer than the maximum length (%tu)", NSStringFromClass(self.class), self.label, sizeof(structValue.label));
+    [self.label getBytes:structValue.label maxLength:sizeof(structValue.label) usedLength:NULL encoding:NSUTF8StringEncoding options:0 range:NSMakeRange(0, self.label.length) remainingRange:NULL];
+    structValue.updated_at = self.updated_at;
+    
+    return [NSData dataWithBytes:&structValue length:sizeof(structValue)];
+    
+}
+
+- (NSArray *)propertyKeysToBeAddedToDescription
+{
+    return @[SelfKey(group), SelfKey(label)];
+}
+
+@end
+
+
+//===========================================================================
+
+
 @implementation LXProtocolDeviceAcknowledgement
 
 - (NSData *)dataValue

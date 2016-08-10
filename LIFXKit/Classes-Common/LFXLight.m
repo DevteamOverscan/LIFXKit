@@ -25,6 +25,7 @@ NSTimeInterval const kSetStateMessageOverlapTime = 3.0;
 @property (nonatomic) LFXTarget *target;
 
 @property (nonatomic) NSString *label;
+@property (nonatomic) NSString *group;
 @property (nonatomic) LFXHSBKColor *color;
 @property (nonatomic) LFXPowerState powerState;
 
@@ -41,12 +42,16 @@ NSTimeInterval const kSetStateMessageOverlapTime = 3.0;
 
 - (NSString *)description
 {
-	return [self lfx_descriptionWithPropertyKeys:@[SelfKey(deviceID), SelfKey(label), SelfKey(color), SelfKey(powerState), SelfKey(tags), SelfKey(clockDelta)]];
+	return [self lfx_descriptionWithPropertyKeys:@[SelfKey(deviceID), SelfKey(label), SelfKey(group), SelfKey(color), SelfKey(powerState), SelfKey(tags), SelfKey(clockDelta)]];
 }
 
 - (void)didChangeReachability:(LFXDeviceReachability)reachability
 {
 	[self.lightObserverProxy light:self didChangeReachability:reachability];
+}
+
+- (NSString *)group {
+    return [self propertyValueForKey:SelfKey(group)];
 }
 
 - (void)lfx_updateLabel
@@ -195,9 +200,16 @@ NSTimeInterval const kSetStateMessageOverlapTime = 3.0;
 		LFXLight *light = CastObject(LFXLight, device);
 		if ([light bestPropertySourceForKey:SelfKey(color)] != LFXPropertySourceDevice || [[light propertyTimestampForKey:SelfKey(color) source:LFXPropertySourceDevice] lfx_timeIntervalUpToNow] > 25.0)
 		{
-			[light.networkContext sendMessage:[LFXMessageLightGet messageWithTarget:light.target]];
+            [light.networkContext sendMessage:[LFXMessageLightGet messageWithTarget:light.target]];
 		}
 	}]];
+    [self addPeriodicTask:[LFXPeriodicTask taskWithTaskID:@"Get LightGroup" runsWhenDeviceIsUnreachable:NO taskBlock:^(LFXDevice *device) {
+        LFXLight *light = CastObject(LFXLight, device);
+        if ([light bestPropertySourceForKey:SelfKey(group)] != LFXPropertySourceDevice || [[light propertyTimestampForKey:SelfKey(group) source:LFXPropertySourceDevice] lfx_timeIntervalUpToNow] > 25.0)
+        {
+            [light.networkContext sendMessage:[LFXMessageDeviceGetGroup messageWithTarget:light.target]];
+        }
+    }]];
 	[self addPeriodicTask:[LFXPeriodicTask taskWithTaskID:@"Get Mesh Firmware" runsWhenDeviceIsUnreachable:NO taskBlock:^(LFXDevice *device) {
 		LFXLight *light = CastObject(LFXLight, device);
 		if ([light bestPropertySourceForKey:SelfKey(meshFirmwareVersion)] != LFXPropertySourceDevice || [[light propertyTimestampForKey:SelfKey(meshFirmwareVersion) source:LFXPropertySourceDevice] lfx_timeIntervalUpToNow] > lfx_NSTimeIntervalWithMinutes(10))
@@ -313,6 +325,14 @@ NSTimeInterval const kSetStateMessageOverlapTime = 3.0;
 			
 			break;
 		}
+        case LX_PROTOCOL_DEVICE_STATE_GROUP:
+        {
+            LFXMessageDeviceStateGroup *stateGroup = CastObject(LFXMessageDeviceStateGroup, message);
+
+            [self setPropertyValue:stateGroup.payload.label forKey:SelfKey(group) source:LFXPropertySourceDevice];
+            
+            break;
+        }
 		default:
 			break;
 	}

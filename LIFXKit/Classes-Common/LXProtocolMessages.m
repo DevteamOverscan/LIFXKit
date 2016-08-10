@@ -756,6 +756,42 @@
 //===========================================================================
 
 
+@implementation LFXMessageDeviceGetGroup
+
++ (Class)payloadClass
+{
+    return [LXProtocolDeviceGetGroup class];
+}
+
++ (LFXMessageType)messageType
+{
+    return LX_PROTOCOL_DEVICE_GET_GROUP;
+}
+
+@end
+
+
+//===========================================================================
+
+
+@implementation LFXMessageDeviceStateGroup
+
++ (Class)payloadClass
+{
+    return [LXProtocolDeviceStateGroup class];
+}
+
++ (LFXMessageType)messageType
+{
+    return LX_PROTOCOL_DEVICE_STATE_GROUP;
+}
+
+@end
+
+
+//===========================================================================
+
+
 @implementation LFXMessageDeviceAcknowledgement
 
 + (Class)payloadClass

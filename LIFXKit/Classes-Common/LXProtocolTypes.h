@@ -98,7 +98,9 @@ typedef NS_ENUM(uint16_t, LXProtocolType) {
 	LX_PROTOCOL_DEVICE_STATE_SITE = 42,
 	LX_PROTOCOL_DEVICE_STATE_REBOOT = 43,
 	LX_PROTOCOL_DEVICE_SET_PAN_GATEWAY = 44,
-	LX_PROTOCOL_DEVICE_ACKNOWLEDGEMENT = 45,
+    LX_PROTOCOL_DEVICE_ACKNOWLEDGEMENT = 45,
+    LX_PROTOCOL_DEVICE_GET_GROUP = 51,
+    LX_PROTOCOL_DEVICE_STATE_GROUP = 53,
 	LX_PROTOCOL_LIGHT_GET = 101,
 	LX_PROTOCOL_LIGHT_SET_COLOR = 102,
 	LX_PROTOCOL_LIGHT_SET_WAVEFORM = 103,
@@ -592,6 +594,27 @@ typedef NS_ENUM(uint16_t, LXProtocolType) {
 
 @interface LXProtocolDeviceAcknowledgement : Structle
 
+
+@end
+
+
+//===========================================================================
+
+
+@interface LXProtocolDeviceGetGroup : Structle
+
+
+@end
+
+
+//===========================================================================
+
+
+@interface LXProtocolDeviceStateGroup : Structle
+
+@property (nonatomic) NSString * group; // 16 characters max
+@property (nonatomic) NSString * label; // 32 characters max
+@property (nonatomic) uint64_t updated_at;
 
 @end
 

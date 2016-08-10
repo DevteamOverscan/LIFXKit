@@ -462,6 +462,26 @@ typedef LXProtocolType LFXMessageType;
 //===========================================================================
 
 
+@interface LFXMessageDeviceGetGroup : LFXMessage
+
+@property (nonatomic) LXProtocolDeviceGetGroup* payload;
+
+@end
+
+
+//===========================================================================
+
+
+@interface LFXMessageDeviceStateGroup : LFXMessage
+
+@property (nonatomic) LXProtocolDeviceStateGroup* payload;
+
+@end
+
+
+//===========================================================================
+
+
 @interface LFXMessageLightGet : LFXMessage
 
 @property (nonatomic) LXProtocolLightGet* payload;

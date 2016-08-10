@@ -25,6 +25,7 @@
 
 // Light State
 - (NSString *)label;
+- (NSString *)group;
 - (LFXHSBKColor *)color;
 - (LFXPowerState)powerState;
 - (LFXFuzzyPowerState)fuzzyPowerState;
