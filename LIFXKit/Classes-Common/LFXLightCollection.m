@@ -65,6 +65,11 @@
 	}];
 }
 
+- (NSArray /* LFXLight */ *)lightsForGroup:(NSString *)group {
+    return [self.lfx_lights lfx_allObjectsWhere:^BOOL(LFXLight *light) {
+        return [light.group isEqualToString:group];
+    }];
+}
 
 - (NSArray *)lights
 {

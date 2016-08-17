@@ -26,6 +26,7 @@
 - (LFXLight *)firstLightForLabel:(NSString *)label;
 - (NSArray /* LFXLight */ *)lightsForLabel:(NSString *)label;
 
+- (NSArray /* LFXLight */ *)lightsForGroup:(NSString *)group;
 
 
 // Light State
